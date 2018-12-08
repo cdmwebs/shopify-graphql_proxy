@@ -10,6 +10,7 @@ module Shopify
       super
       @shop = opts[:shop] if opts[:shop]
       @password = opts[:password] if opts[:password]
+      @session_key = opts[:session_key] if opts[:session_key]
     end
 
     def perform_request(env)
@@ -42,8 +43,12 @@ module Shopify
 
     private
 
+    def shopify_session
+      @request.session.key?(@session_key) || {}
+    end
+    
     def value_from_shopify_session(key)
-      @request.session.key?(:shopify) ? @request.session[:shopify][key] : nil;
+      shopify_session.fetch(key, nil)
     end
   end
 end
